@@ -1,0 +1,128 @@
+linux_command
+cd : change directory
+	cd ：切换到当前用户的家目录
+	cd ~ ：切换到当前用户的家目录
+	cd ~USERNAME ：切换到指定用户的家目录
+	cd - ：在前一个目录和当前目录之间来回切换
+
+	两个独特的路径：
+		. : 当前目录
+		.. : 上一级目录
+pwd : print working directory
+
+命令历史：bash的特性之一
+	history
+
+	保存的条数：
+		环境变量：HISTSIZE
+
+	用户退出时的持久保存位置：
+		寒假变量：HISTFILE，通常默认为用户家目录下的 .bash_history
+
+		此文件中保存的最大数目：
+			环境变量：HISTFILESIZE
+
+	用法：
+		history N : 显示最近的N条历史操作，包括当前命令自身；
+		history -c : 清空历史命令
+		history -d offset : 删除指定的偏移处的命令
+		history -a : 手动保存命令到.bash_history文件中
+
+	bash调用命令列表历史中的命令：
+		!#: 执行命令列表中的第#个命令
+		!!: 执行上一条命令
+		!string: 执行命令历史中离现在最近的以string开头的命令
+
+		!$: 调用上一条命令的最后一个参数
+		ESC，.:功能同上
+
+如何获取命令帮助：
+	内置命令：help COMMAND
+		凌辱：help history
+	外置命令：
+		1、COMMAND --help
+		2、手册:manual
+
+			手册：有章节之分，1-9
+			man [#] COMMAND 
+
+			如何查看指定命令在哪些章节下有帮助：
+			whatis COMMAND
+				注意：whatis根据数据库执行查找操作，此库系统定期更新，可使用makewhatis手动更新
+
+			手册的段落：
+				NAME:命令名称
+				DESCRIPTION:命令功能的详细说明
+				OPTIONS:所有选项
+				SYNOPSIS:使用格式
+				EXAMPLES:使用示例
+				FILES:与当前命令相关的配置文件
+				SEE ALSO:可参考的其他手册
+
+			帮助中的格式字串：
+				[]:可省略
+				<>:不可省略的
+				|:二选一或多选一
+				...:同类内容可以出现多个
+				{}:分组
+
+			man的使用机制：
+				翻屏：
+					空格键：向文件尾部翻一屏
+					b：向文件首部翻一屏
+					回车键：向文件尾部翻一行
+					k：向文件首部翻一行
+					Ctrl+d: 向文件尾部翻半屏
+					Ctrl+u: 向文件首部翻半屏
+
+				字串搜索：
+					/keyword:从文件首部向文件尾部搜索
+					 	n:显示找到的下一个
+					 	N:显示找到的上一个
+					?keyword:从文件尾部向文件首部搜索
+				退出：
+					q
+
+			注意：man能够为除了命令之外的配置文件、系统调用、库调用等都能提供帮助手册，他们分别位于不同的章节中：
+				1：用户命令
+				2：系统调用
+				3：库调用
+				4：设备文件
+				5：配置文件
+				6：游戏
+				7：杂项
+				8：管理命令
+
+		3、info命令：获取在线文档
+			仅在man手册无法获取到足够信息，或想了解程序的卡法历史时才使用info
+
+		4、很多应用程序都自带有帮助文档：/usr/share/doc
+			ChangeLog:程序版本升级版本情况
+			INSTALL:安装方法说明
+			README:程序说明信息
+
+		5、主流发行版官方文档
+			redhat,suse,debian
+
+			RedHat:http://www.redhat.com/docs/
+
+		6、google
+
+	练习：
+		shutdown,dte,hwclock,ntpdate,reboot,halt
+
+
+
+终止当前命令的执行：Ctrl + C
+
+Linux中所有以点开头的文件均为隐藏文件
+	ls -a 显示隐藏文件
+
+cat 
+
+
+Linux的国际化：
+	internationallization
+	i18n
+
+	# export LANG=en 修改当前字符集为英文，只对当前shell有效
