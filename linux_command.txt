@@ -36,6 +36,14 @@ pwd : print working directory
 		!$: 调用上一条命令的最后一个参数
 		ESC，.:功能同上
 
+		通常只有第一次执行真正的查找操作，并且缓存下来：
+			查看此缓存用hash命令:
+				hash: 查看缓存
+				hash -d: 清除指定名称的缓存
+				hash -r: 清除所有缓存
+	bash的重要功能：命令补全
+		根据内部命令或外部命令的查找方式以用户指定的字符串开头的命令，如果用户指定的开头字符转能唯一标识某命令，则tab键可补全此命令，否则，则两次tab键可显示所有以指定字串开头的命令
+
 如何获取命令帮助：
 	内置命令：help COMMAND
 		凌辱：help history
@@ -111,6 +119,8 @@ pwd : print working directory
 	练习：
 		shutdown,dte,hwclock,ntpdate,reboot,halt
 
+		如何关机，如何重启，如何在指定时间关机
+
 
 
 终止当前命令的执行：Ctrl + C
@@ -126,3 +136,20 @@ Linux的国际化：
 	i18n
 
 	# export LANG=en 修改当前字符集为英文，只对当前shell有效
+
+Linux文件系统的基础特性：
+	1、文件名称严格区分大小写
+	2、所有文件都文娱根目录下，FHS
+	3、路径以/作为分隔符
+	4、每个文件的名称可使用除/以外的任意字符单个名称最长不能超出255个字符
+
+bash重要特性之一：路径补全
+	以用户指定的起始路径进行文件名称补全查找
+
+	每个绝对路径都可以切割为两部分
+		基名
+			basename /path/to/somewehere
+				结果为somewhere
+		目录名
+			dirname /path/to/somewhere
+				结果为/path/to
