@@ -17,7 +17,7 @@ pwd : print working directory
 		环境变量：HISTSIZE
 
 	用户退出时的持久保存位置：
-		寒假变量：HISTFILE，通常默认为用户家目录下的 .bash_history
+		环境变量：HISTFILE，通常默认为用户家目录下的 .bash_history
 
 		此文件中保存的最大数目：
 			环境变量：HISTFILESIZE
@@ -27,6 +27,10 @@ pwd : print working directory
 		history -c : 清空历史命令
 		history -d offset : 删除指定的偏移处的命令
 		history -a : 手动保存命令到.bash_history文件中
+		HISTCONTROL:
+			ignoredups:忽略重复的命令连续的相同命令才会为重复
+			ignorespace:忽略以空白字符开头的命令
+			ignoreboth:二者同时生效
 
 	bash调用命令列表历史中的命令：
 		!#: 执行命令列表中的第#个命令
@@ -121,6 +125,12 @@ pwd : print working directory
 
 		如何关机，如何重启，如何在指定时间关机
 
+		reboot:重启
+		halt:关机
+		poweroff:关机
+
+		date:显示或设定日期和时间
+
 
 
 终止当前命令的执行：Ctrl + C
@@ -153,3 +163,5 @@ bash重要特性之一：路径补全
 		目录名
 			dirname /path/to/somewhere
 				结果为/path/to
+
+FHS:Filesystem Hierarchy Standard
