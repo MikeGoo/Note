@@ -166,4 +166,92 @@ bash重要特性之一：路径补全
 
 FHS:Filesystem Hierarchy Standard
 	/bin,/sbin：系统自身启动和运行时可能会用到的核心二进制命令
-	/usr/bin,/usr/sbin,系统运行中，用户为完成某种操作可能用到的命令
+	/lib:共享文件和内核模块
+	/lib64:
+	/etc:配置文件
+	/usr:
+		/usr/bin,/usr/sbin,系统运行中，用户为完成某种操作可能用到的命令
+		/usr/lib,/usr/lib64:库文件
+		/usr/share/man,/usr/share/doc：帮助手册
+	/dev:devices的缩写，所有设备的设备文件都存放于此，设备文件通常也称为特殊文件（仅有元数据，没有数据）
+	/proc:伪文件系统，内核和进程信息的虚拟文件系统接口
+	/sys:伪文件系统，硬件设备信息虚拟文件系统接口
+	/boot:系统引导加载时用到的静态文件，内核和ramdisk(centOS5:initrd,centOS6:initramfs),grub(bootloader)
+	/home/USERNAME
+	/root
+
+	/mnt:挂载点
+	/media:挂载点
+
+	/srv:服务所用到的数据
+	/tmp:临时文件存储位置
+	/var:经常发生变化的文件
+	/misc:不辨归类的备用目录
+	/opt:第三方应用的安装目录
+	/usr/local:第三方应用的安装目录
+	/selinux:
+		Security Enhanced Linux:安全加强的linux
+
+
+	应用程序的组成部分：
+		二进制文件
+		库文件
+		配置文件
+		帮助文件
+
+文件管理类命令：
+	文件类型：
+	文件信息查看:
+	用户和权限：
+	bash的一些特性：
+		管道和重定向
+		文件本编辑器
+		正则表达式
+		文件查找
+
+	文件类型：
+		普通文件：-，f
+		目录文件：d
+		符号链接文件：l
+		设备文件：
+			字符设备：c（线性设备）
+			块设备：b（随机设备）
+		命名管道：p：pipe
+		套接字文件：s（unix sock文件）
+
+	文件内容的类型：
+		file /path/FILENAME
+
+	目录管理：
+		cd,pwd,ls
+
+		mkdir:make directory
+			-p:当指定目标目录的父目录不存在时，则先创建之
+
+		rmdir:remove directory
+			-p:单传目录路径中的空目录
+
+		bash的工作特点：没有返回信息通常是最好的信息
+			每个命令执行结束后，会有一个“执行状态返回值”，有效范围0-255
+			0：执行成功
+			1-255：执行失败
+
+		使用特殊变量$?可以获取最近一条命令的状态返回值
+			用echo $? 显示
+
+		bash特性之一，命令行展开
+			~：用户家目录
+			~USERNAME：指定用户的家目录
+
+			{}：
+				/tmp/{x,y}
+					/tmp/x,/tmp/y
+	
+	ls 命令
+		list简写
+
+		list [options] [file]
+
+			常用选项：
+				-l:long，长格式：显示文件的属性信息
+					
