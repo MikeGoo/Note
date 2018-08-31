@@ -165,3 +165,5 @@ bash重要特性之一：路径补全
 				结果为/path/to
 
 FHS:Filesystem Hierarchy Standard
+	/bin,/sbin：系统自身启动和运行时可能会用到的核心二进制命令
+	/usr/bin,/usr/sbin,系统运行中，用户为完成某种操作可能用到的命令
