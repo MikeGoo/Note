@@ -28,12 +28,22 @@
 - Django Book2.0版本的中文文档：http://djangobook.py3k.cn/2.0/chapter01
 - Django2.0版本的中文文档：http://python.usyiyi.cntranslate/django2/index.html
 
-## 创建Django项目：
-	命令行：django-admin startproject [NAME]
+## 创建Django项目：命令行下执行：
+	django-admin startproject [NAME]
 
 ## 运行Django项目：
-- 在项目文件夹下运行python manage.py runserver
-- 指定运行端口：python manage.py runserver [端口号]
+- 在项目文件夹下运行:
+'''
+python manage.py runserver
+'''
+- 指定运行端口：
+'''
+python manage.py runserver [端口号]
+'''
+- 指定IP地址：
+'''
+python manage.py runserver [0.0.0.0:0000]
+''' 
 
 - 停止正在运行的项目：
 	ctrl+C
