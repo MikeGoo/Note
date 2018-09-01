@@ -33,17 +33,11 @@
 
 ## 运行Django项目：
 - 在项目文件夹下运行:
-'''
-python manage.py runserver
-'''
+	python manage.py runserver
 - 指定运行端口：
-'''
-python manage.py runserver [端口号]
-'''
+	python manage.py runserver [端口号]
 - 指定IP地址：
-'''
-python manage.py runserver [0.0.0.0:0000]
-''' 
+	python manage.py runserver [0.0.0.0:0000]
 
 - 停止正在运行的项目：
 	ctrl+C
