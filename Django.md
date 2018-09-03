@@ -104,5 +104,43 @@ urlpatterns = [
 ]
 ```
 ## 应用命名空间
-
+在多个app之间，有可能会产生同名的url，这时候为了避免反转url的时候产生混淆，可以使用应用命名空间，来做区分。定义命名空间非常简单，只要在`app`的`urls.py`中定义一个叫做`app_name`的变量，来指定这个应用的命名空间。实例代码如下：
+```python
+# 应用命名空间的变量叫做app_name
+app_name = 'front'
+urlpatterns = [
+    path('',views.index,name = 'index'),
+    path('signin/',views.longin,name = 'login')
+]
+```
+以后在做反转的时候就可以使用`应用命名空间:url名称`的方式进行反转。示例代码如下：
+```python
+return redirect(reverse('cms:login'))
+```
 ## 应用命名空间和实例命名空间
+
+# 模板介绍
+
+模板可以让视图函数返回复杂的html代码，从而使浏览器可以渲染出非常漂亮的页面。
+目前市面上有非常多的模板系统，最知名最好用的就是`DTL(Django Templage Language)`和`jinja2(flask)`。DTL为Django内置模板语言，可以与django做到无缝衔接。
+
+- DTL与普通html文件的区别
+DTL模板是一种带有特殊语法的HTML文件，这个HTML文件可以被Django变异，可以传递参数进去，实现数据动态化。在编译完成后生成一个普通的HTML文件，然后发送给客户端。
+
+## 渲染模板
+渲染模板有多重方式，这里讲下两种常用的方式。
+
+- `render_to_string`：找到模板，然后将模板编译后渲染成python字符串格式，最后再通过`HttpResponse`类包装成一个HttpResponse对象返回回去。示例代码如下：
+```python
+from django.templage.loader import render_to_string
+from django.http import HttpResponse
+def book_detail(request,book_id):
+    html = render_to_string('detail.html')
+    return HttpResponse(html)
+```
+- `render`:django还提供了一个更加简便的方式，直接将模板渲染成字符串和包装成`HTTPResponse`对象一步到位完成。示例代码如下：
+```python
+from django.shortcuts import render
+def book_id(request):
+    return render(request,'detail.html')
+```
