@@ -144,3 +144,126 @@ from django.shortcuts import render
 def book_id(request):
     return render(request,'detail.html')
 ```
+
+## 模板查找路径
+
+在项目的`settings.py`文件中，有一个`TEMPLATES`配置，这个配置包含了模板引擎的配置，模板查找路径的配置，模板上下文的配置等。模板路径可以在两个地方配置。
+
+- `DIRS`:这个一个列表，存放模板文件夹`templates`的地址
+- `APP_DIRS`:默认为True，这个开启后，会在INSTALL_APP的安装了的APP的目录下的templates目录查找模板文件。
+## 模板查找顺序
+`DIRS` --> 自己的APP下的`templats` --> 其他APP下的`templates` 
+
+# DTL模板语法
+
+## 变量
+
+- 在模板中还用变量，需要将变量放到`{{}}`中。
+- 如果想要访问对象的属性，那么可以通过`对象.属性名`来进行访问。
+```python
+class Person(object):
+    def __init__(self,username):
+        self.username = username
+p = Person()
+context = {
+    'person':p
+}
+
+```
+    以后想要访问`person`的`username`，那么就是通过`person.username`来访问。
+- 如果想要访问一个字典的key对应的value，那么只能通过`字典名.key`的方式进行访问，不能通过`中括号[]`的形式进行访问。
+```python
+context = {
+    'person':{
+        'username':'zhangsan'
+    }
+}
+```
+    那么以后在模板中访问`username`，就是用`person.username`
+- 因为在访问字典的`key`时候也是使用`.`来访问，因此不能在字典中定义字典本身就有的属性名单做`key`，否则字典的那个属性将变成字典中的key了。
+```python
+context = {
+    'person':{
+        'username':'zhangsan',
+        'keys':'abc'
+    }
+}
+```
+    以上因为将`keys`作为`person`这个字典的key了，所有字典`personde`的`keys`属性不能调用
+- 如果想要访问列表或者元组，也要通过`.`的方式进行访问，不能通过`中括号[]`来进行访问。示例代码如下：
+```python
+{{person.1}}
+```
+
+# if语句
+- 所有的标签都是在`{% %}`之间
+- if标签有闭合标签，就是`{%endif%}`
+- if标签的判断运算符，跟python中是一样的。
+
+# for...in...标签
+
+## `for...in...`标签：
+`for...in...`类似有python中的`for...in...`。可以遍历列表，元组，字符串，字典等一切可以遍历的对象。示例代码如下：
+```html
+{% for person in persons%}
+<p>{{ person.name }}</p>
+{% endfor %}
+```
+如果想要反向遍历，那么在遍历的时候加上一个`reversed`，示例代码如下：
+```html
+{% for person in persons reversed%}
+<p>{{ person.name }}</p>
+{% endfor %}
+```
+
+遍历字典的时候，需要使用`items`、`keys`和`values`等方法。在`DTL`中，执行一个方法不能使用圆括号的形式。遍历字典示例代码如下：
+```html
+{%for key,value in person.items%}
+    <li>
+        {{key}}:{{value}}
+    </li>
+{%endfor%}
+```
+
+在`for`循环中，`DTL`提供了一些变量可供使用。这些变量如下：
+- `forloop.counter`:当前循环的下标，以1作为起始值。
+- `forloop.counter0`:当前循环的下标，以0作为起始值。
+- `forloop.revcounter`:当前循环的反下标值，到1为止。
+- `forloop.revcounter0`:当前循环的反下标值，到0为止。
+- `forloop.first`:是否是第一次遍历。
+- `forloop.last`:是否是最后一次遍历。
+
+## `for...in...empty`标签
+这个标签的使用跟`for...in...`是一样的，不过在遍历的对象没有元素的情况下，会执行`empty`中的内容，示例代码如下：
+```html
+{% for person in persons %}
+    <li>{{person}}</li>
+{% empty %}
+    <p>暂时没有任何人</p>
+{% endfor %}
+```
+# `url`标签
+
+## `url`标签
+在模板中，我们经常要写一些`url`，比如某个`a`标签中需要定义`href`属性。建议使用饭庄的方式来实现，类似于`reverse`一样，示例代码如下：
+```html
+<a href="{%  url 'book:list' %}">图书列表页面</a>
+```
+
+如果`url`反转的时候需要传递参数，那么可以在后面传递，但是参数分位置参数和关键字参数。位置参数和关键字参数不能同时使用，示例代码如下：
+```python
+# path 部分
+path('detail/<book_id>',views.book_detail,name='detail')
+
+# url反转，使用位置参数
+<a href="{% url 'book:detail' 1 %}">图书详情页面</a>
+
+# url反转，使用关键字参数
+<a href="{% url 'book:detail' book_id=1 %}">图书详情页面</a>
+
+```
+
+如果想要在使用`url`标签的时候传递查询字符串参数，那么必须手动在后面添加，示例代码如下：
+```html
+<a href="{% url 'book:detail' book_id=1%}?page=1">图书详情页面</a>
+```
