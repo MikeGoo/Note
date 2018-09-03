@@ -76,3 +76,33 @@ def auther_detail(request):
 	return HttpResponse(text)
 ```
 	因为查询字符串使用的是`GET`请求，所以我们通过`request.GET`来获取参数。并且因为`GET`是一个类似于字典的数据类型，所有获取值跟字典的方式都是一样的。
+
+ 
+# URL命名
+
+## 为什么需要url命名
+因为url是经常变化的，如果在代码中写死，需要经常改代码。给url取个名字，以后使用url的时候就是用他的名字进行反转就可以了，就不需要一个一个去改url。
+反转需要用到reverse函数：`from django.shortcuts import reverse`
+重定向用法：
+```python
+def index(request):
+# 判断是否有username，有就显示前台首页，没有就重定向去登录页面
+    username = request.GET.get('username')
+    if username:
+        return HttpResponse('前台首页')
+    else:
+        #通过login名称找到对应的url，通过reverse反转成地址
+        return redirect(reverse('lonin'))
+```
+
+## 如何给一个url命名
+在`path`中，传递一个`name`参数就可以指定。示例代码如下：
+```python
+urlpatterns = [
+    path('',views.index,name = 'index'),
+    path('login/',views.login,name = 'login')
+]
+```
+## 应用命名空间
+
+## 应用命名空间和实例命名空间
