@@ -267,3 +267,43 @@ path('detail/<book_id>',views.book_detail,name='detail')
 ```html
 <a href="{% url 'book:detail' book_id=1%}?page=1">图书详情页面</a>
 ```
+
+# Django模板过滤器
+
+## 为什么要用过滤器？
+因为在DTL中，不支持给函数传递参数，这将有很大的局限，过滤器其实就是一个函数，可以对需要处理的函数进行处理，并且可以额外接受一个参数（也就是说，最多只能有两个参数）
+
+## add过滤器
+将传进来的参数添加到原来的值上面。这个过滤器会尝试将`值`和`参数`转换成整型然后进行相加。如果转换成整型过程中失败了，那么会将`值`和`参数`进行拼接。如果是字符串，那么会拼接成字符串，如果是列表，那么会拼接成一个列表。示例代码如下：
+```
+{{ value|add:'2'}}
+```
+
+如果`value`等于4，那么结果是`6`，如果`value`是一个普通的字符串，比如`abc`,那么结果将是`abc2`，`add`过滤器的源代码如下：
+```python
+def add(value,arg):
+'''Add the arg to the value.'''
+try:
+    return int(value) + int(arg)
+except(ValueError,TypeError):
+try:
+    return value + arg
+except Exception:
+    return ''
+```
+
+## cut过滤器
+移除值中所有指定的字符串。类似于`python`中的`replace(args,"")`。示例代码如下：
+```
+{{ value|cut:" "}}
+```
+
+以上示例将会移除`value`中所有的空格字符。`cut`过滤器的源代码如下：
+```python
+def cut(value,arg):
+    safe = isinstance(value,SafeData)
+    value = value.replace(arg,'')
+    if safe and arg != ';':
+        return mark_safe(value)
+    return value
+```
