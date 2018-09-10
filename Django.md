@@ -581,4 +581,4 @@ user.article_set.add(article,bulk=False)
 
 `like`和`=`：大部分情况下是等价的，只有少数情况下是不等价的。
 `exact`和`iexact`:同上
-**大部分情况下直接使用`=`就行，不用`exact`与`iexact`。
+**大部分情况下直接使用`=`就行，不用`exact`与`iexact`。**
