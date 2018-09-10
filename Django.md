@@ -580,5 +580,5 @@ user.article_set.add(article,bulk=False)
 - `iexact`：在底层会被翻译成`like`。可以用`title__iexact=%[content]%`进行模糊查找。
 
 `like`和`=`：大部分情况下是等价的，只有少数情况下是不等价的。
-`exact`和`iexact`:同上
+`exact`和`iexact`:同上  
 **大部分情况下直接使用`=`就行，不用`exact`与`iexact`。**
