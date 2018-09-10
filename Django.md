@@ -330,3 +330,247 @@ def cut(value,arg):
 - H：小时，24小时制，两位数
 - i：分钟，两位数
 - s：秒，两位数
+
+# 模板继承
+
+在前端页面开发中，有些代码是需要重复使用的，这种情况可以使用`incloud`标签来实现，也可以使用另外一个比较强大的方式来实现，那就是继承模板。模板继承类似于`Python`中的类，在父类中可以先定义好一些子模板需要用到的代码，然后子模板直接继承就可以了。并且因为子模板肯定有自己的不同代码，因此可以在父母版中定义一个`block`接口，然后子模板再去实现。以下是父模板的代码：
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Title</title>
+</head>
+<body>
+<header>
+    <ul>
+        <li><a href="/">首页</a></li>
+        <li><a href="{% url 'company' %}">公司</a></li>
+        <li><a href="{% url 'school' %}">校园</a></li>
+        <li>{{ username }}</li>
+    </ul>
+</header>
+<div class="content">
+    {% block content %}
+        我是父模板中content的代码
+    {% endblock%}
+</div>
+<footer>
+    这是footer部分
+</footer>
+</body>
+</html>
+```
+
+这个模板，我们取名叫`base.html`，定义好一个简单的`html`骨架，然后定义好两个`block`接口，让子模板来根据具体需求来实现。子模板然后通过`extends`标签来实现，示例代码如下：
+```html
+{% extends 'base.html' %}
+{% block content%}
+<!-- 以下代码可以使用到父模板中的content内容 -->
+    <p>{{ block.super}}</p>
+    这是school的index
+{% endblock%}
+```
+
+**需要注意的是：extends标签必须放在最开始的位置**
+**子模板中的代码必须放在block中，否则将不会被渲染**
+如果在某个`block`中需要使用父模板中的内容，那么可以使用`{{ block.super}}`来继承。
+
+# 加载静态文件
+在一个网页中，不仅仅只有一个`html`骨架，还需要`css`样式文件，`js`执行文件及一些图片等。因此在`DTL`中，使用`static`标签来加载静态文件。要使用`static`标签，首先需要`{% load static %}`。加载静态文件的步骤如下：
+
+1. 首先确保`django.contrib.staticfiles`已经添加到`settings.INSTALLED_APPS`中。
+
+2. 确保在`settings.py`中设置了`STATIC_URL`。
+
+3. 在已经安装了的`app`下创建一个文件夹叫做`static`，然后再在这个文件夹下创建一个和当前`app`同名的文件夹，再把静态文件放到这个文件夹下。
+
+4. 如果有一些静态文件是不合任何`app`挂钩的，那么可以在`settings.py`中添加`STATICFILES_DIRS`，以后`DTL`就会在这个列表的路径中查找静态文件。可以这样设置：
+```python 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR,'static')    
+]
+```
+
+5. 在模板中使用`load`标签加载`static`标签，比如要加载在项目的`static`文件夹下的`style.css`的文件。那么示例代码如下：
+```html
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'style.css'%}">
+```
+
+6. 如果不想每次在模板中加载静态文件都使用`load`加载`static`标签，那么可以在`settings.py`中的`TEMPLATES/OPTIONS`中添加`builtins:['django.templatetags.static']`，这样以后模板中就可以直接使用`static`标签，而不需要手动`load`了。
+
+7. 如果没有在`settings.INSTALLED_APPS`中添加`django.contrib.staticfiles`。那么我们就需要手动的将请求静态文件的 `url`与静态文件的路径进行映射了。示例代码如下：
+```python
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    
+] + static(settings.STATIC_URL,documents_root = settings.STATIC_ROOT)
+```
+
+# ORM模型
+`ORM`，全称`Object Relational Mapping`,中文叫做对象关系映射通过`ORM`我们可以通过类的方式去操作数据库，而不用再写原生的SQL语句。通过把表映射成类，把行作实例，把字段作为属性，`ORM`在执行对象操作的时候最终还是会把对应的操作转化为数据库的原生语句。
+
+## 创建ORM模型
+`ORM`模型一般都是防在`app`的`modeld.py`文件夹中，每个`app`都可以有自己的模型。并且如果这个模型想要映射到数据库中，那么这个`app`必须要放在`settings.py`的`INSTALLED_APP`中进行安装。示例代码如下：
+```python
+from django.db import models
+class Book(models.Model):
+    name = models.CharField(max_length=100,null=False)
+    auther = models.CharField(max_length=100,null=False)
+    pub_time = models.DateTimeField(default=datetime.now)
+    price = models.FloatField(default=0)
+```
+以上便定义了一个模型，这个模型继承自`django.db.models.Model`类，如果这个模型想要映射到数据库中，就必须继承自这个类。这个模型以后映射到数据库中，表名是模型名称的小写形式，为`book`。
+
+## 映射模型到数据库
+将`ORM`模型映射到数据库，总结起来就是以下几步：
+1. 在`settings.py`中，配置好`DATABASES`，做好数据库相关的配置。
+2. 在`app`中的`models.py`中定义好模型，这个模型必须继承自`django.db.models.Model`。
+3. 将这个`app`添加到`settings.py`的`INSTALLED_APP`中。
+4. 在命令行终端，进入到项目所在的路径然后执行命令`python manage.py makemigrations`来生成迁移脚本文件。
+5. 在命令行执行命令：`python manage.py migrate`来将迁移脚本文件映射到数据库中。
+
+# ORM对数据库的基本操作
+
+## 添加数据
+只需要使用ORM模型创建一个对象，然后在调用这个对象的`save()`方法进行保存就可以了。示例代码如下：
+```python
+book = Book(name='西游记',author='吴承恩',price=100)
+book.save()
+```
+
+## 查找数据
+所有的查找工作都是使用模型上的`objects`属性来完成，也可自定义方法。
+1. 根据主键进行查找：
+```python
+book = Book.objects.get(pk=1)
+```
+2. 根据其他字串进行查找:
+```python
+books = Book.objects.filter(name='三国演义')
+```
+使用`filter`方法返回回来的是一个`QuerySet`对象，这个对象类似于列表，可以使用这个对象的`first`方法来获取第一个值。
+
+## 删除数据
+首先查找到对应的数据模型，然后在调用这个模型的`delete`方法即可删除，示例代码如下：
+```python
+book = Book.objects.get(pk=1)
+book.delete()
+```
+
+## 修改数据
+首先查找到想要修改的数据，然后修改这个模型上对应属性的值，再执行`save()`方法：
+```python
+book = Book.objects.get(pk=1)
+book.price = 200
+book.save()
+```
+
+# ORM模型常用属性
+
+## 常用字段
+### AutoField
+映射到数据库中是`int`类型，可以有自动增长的特性。一般不需要使用这个类型，如果不指定主键，那么模型会自动生成一个叫做`id`的自动增长的主键。
+
+### BigAutoField
+64位的整型，类似于`AutoField`，只不过产生的数据范围是从1~(2^64-1)。
+
+### BooleanField
+在模型层面接受的是True/False。在数据层面是`tinyint`类型。如果没有指定默认值，默认是`none`
+
+### CharField
+在数据库层面是`varchar`类型。在`python`层面就是普通的字符串。这个类型在使用的时候必须要指定最大的长度，也即必须要传递`max_length`这个关键字参数进去。
+
+### DateField
+日期类型。在`python`中是`datetime.date`类型，可以记录年月日。在映射到数据库中也是`date`类型。使用这个`field`可以传递以下几个参数：
+1. `auto_now`：在每次这个数据保存的时候，都是用当前的时间。比如作为一个记录修改日期的字段，可以将这个属性设置为`True`。
+2. `auto_now_add`：在每次数据第一次被添加进去的时候，都是用当前的时间。比如作为一个记录第一次入库的字段，可以将这个顺序性设置为`True`。
+
+### EmailField
+类似于`CharField`。在数据库层面也是一个`varchar`类型，最大长度是254个字符。
+
+### FileField
+用来存储文件的。
+
+### ImageField
+用来存储图片文件的。
+
+### FloatField
+浮点类型。映射到数据中是`float`类型。
+
+### IntegerField
+整型。
+
+### BigInterField
+大整型。
+
+### SmallIntegerField
+小整型
+
+### PositiveSmallIntegerField
+正小整型
+
+### TextField
+大量的文本类型。映射到数据库中是`longtext`类型。
+
+### UUIDField
+只能存储`uuid`格式的字符串。`uuid`是一个32位的全球唯一的字符串，一般用来做主键。
+
+### URLField
+类似于`CharField`，只不过只能用来存储`url`格式的字符串。并且默认的`max_length`是200.
+
+# 外键
+外键用来关联其他表或者本表内的其他数据，示例代码如下：
+```python
+class Article(model.Model):
+    title = models.CharField(max_lengt=100)
+    content = models.TextField()
+
+    author = models.ForeignKey('user.User',on_delete=models.CASCADE)
+```
+`ForeignKey`第一个参数接收引用数据所在的表的名字，如果是本表，可以用`self`,第二个参数`on_delete`参数指示当要引用的那一条数据被删除了之后这条数据该如何处理。
+
+# 表关系
+表之间的关系都是通过外键来进行关联的。而表之间的关系，无非就是三种关系：一对一，一对多(多对一),多对多。
+
+## 一对多
+- 应用场景：比如文章和作者之间的关系。一个文章只能由一个作者编写，但是一个作者可以写多篇文章。文章和作者之间的关系就是典型的多对一关系。
+- 实现方式：一对多或者多对一，都是通过`ForeighKey`来实现的。世事示例代码如下：
+```python
+class User(models.Model):
+    username = models.CharField(max_length=100)
+    password = models.CharField(max_length=100)
+
+    class Article(models.Model):
+        title = models.CharField(max_length=100)
+        content = models.TextField()
+        author = models.ForeignKey('User',on_delete=models.CASCADE)
+```
+
+那么以后在给`Article`对象指定`author`，就可以使用以下代码：
+```python
+article = Article(title='abc',content='123')
+author = User(username='mike',password='111111')
+author.save()
+article.author = author
+article.save()
+```
+并且以后如果想要获取某个用户下面的所有文章，可以通过`article_set`来实现。示例代码如下：
+```python
+user = User.objects.first()
+articles = user.article_set.all()
+for article in articles:
+    print(article)
+```
+并且如果想要将文章添加到某个分类中。可以使用以下的方式：
+```python
+user = User.objects.first()
+article = Article(title='111',content='bbb')
+article.author = User.objects.first()
+
+user.article_set.add(article,bulk=False)
+```
+- 使用`bulk=False`，那么`django`会自动保存`article`，而不需要再添加到`user`之前，先将`article`保存到数据库中。 
