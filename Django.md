@@ -544,10 +544,10 @@ class User(models.Model):
     username = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
 
-    class Article(models.Model):
-        title = models.CharField(max_length=100)
-        content = models.TextField()
-        author = models.ForeignKey('User',on_delete=models.CASCADE)
+class Article(models.Model):
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    author = models.ForeignKey('User',on_delete=models.CASCADE)
 ```
 
 那么以后在给`Article`对象指定`author`，就可以使用以下代码：
@@ -574,3 +574,11 @@ article.author = User.objects.first()
 user.article_set.add(article,bulk=False)
 ```
 - 使用`bulk=False`，那么`django`会自动保存`article`，而不需要再添加到`user`之前，先将`article`保存到数据库中。 
+
+# 查找条件
+- `exact`:在底层会被翻译成`=`。`id__exact=1`等同于`id=1`。
+- `iexact`：在底层会被翻译成`like`。可以用`title__iexact=%[content]%`进行模糊查找。
+
+`like`和`=`：大部分情况下是等价的，只有少数情况下是不等价的。
+`exact`和`iexact`:同上
+**大部分情况下直接使用`=`就行，不用`exact`与`iexact`。
