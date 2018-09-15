@@ -538,7 +538,7 @@ class Article(model.Model):
 
 ## 一对多
 - 应用场景：比如文章和作者之间的关系。一个文章只能由一个作者编写，但是一个作者可以写多篇文章。文章和作者之间的关系就是典型的多对一关系。
-- 实现方式：一对多或者多对一，都是通过`ForeighKey`来实现的。世事示例代码如下：
+- 实现方式：一对多或者多对一，都是通过`ForeighKey`来实现的。示例代码如下：
 ```python
 class User(models.Model):
     username = models.CharField(max_length=100)
@@ -577,8 +577,59 @@ user.article_set.add(article,bulk=False)
 
 # 查找条件
 - `exact`:在底层会被翻译成`=`。`id__exact=1`等同于`id=1`。
-- `iexact`：在底层会被翻译成`like`。可以用`title__iexact=%[content]%`进行模糊查找。
+- `iexact`：在底层会被翻译成`like`。
 
-`like`和`=`：大部分情况下是等价的，只有少数情况下是不等价的。
-`exact`和`iexact`:同上  
-**大部分情况下直接使用`=`就行，不用`exact`与`iexact`。**
+  `like`和`=`：大部分情况下是等价的，只有少数情况下是不等价的。
+  `exact`和`iexact`:同上  
+  **大部分情况下直接使用`=`就行，不用`exact`与`iexact`。**
+
+- QuerySet.query:`query`可以用来查看这个`ORM`查询语句最终被翻译成的`SQL`语句。但是`query`只能被用在`QuerySet`对象上，不能用在普通的`ORM`模型上。因此如果查询语句是通过`get`获取数据的，就不能使用`query`,因为`get`返回的是满足条件的`ORM`模型，而不是`QuerySet`。
+
+- `contains`：大小写敏感，判断某个字符是否在指定的字段中。在翻译成`SQL`语句的时候会被翻译成`like binary`。
+
+- `icontains`：大小写不敏感，判断某个字符是否在指定的字段中。在翻译成`SQL`语句的时候会被翻译成`like`。
+
+# 聚合函数
+
+1. 所有的聚合函数都是放在`django.db.models`下面。
+2. 聚合函数不能够单独的执行，需要放在一些可以执行聚合函数的方法下执行，比如`aggregate`。示例代码如下：
+    ```python
+    result = Book.objects.aggregate(Avg('price'))
+    ```
+3. 聚合函数执行完成后，会给这个聚合函数去个名字，取名规则默认是`filed+__+聚合函数名字`形成的。比如以上代码形成的名字叫做`prcie__avg`。如果不想使用默认的名字，可以自己传递关键词参数进去修改。示例代码如下：
+    ```python
+    result = Book.objects.aggregate(avg=Avg('price'))
+    ```
+    以上传递了关键字参数`avg=Avg('price')`，那么以后`Avg`聚合函数执行完成的名字就叫做`avg`。
+4. `aggregate`:这个方法不会返回一个`QuerySet`对象，而是返回一个字典。这个字典中的key就是聚合函数的名字，值就是聚合函数执行后的结果。
+
+# QuerySet API
+
+## filter
+将满足条件的数据提取出来，返回一个新的`QuerySet`。具体的`filter`可以提供什么条件查询。请见查询操作章节。
+
+## exclude
+排除满足条件的数据，返回一个新的`QuerySet`。示例代码如下：
+```python
+Article.objects.exclude(title__contain='hello')
+```
+
+## annotate
+给`QuerySet`中的每一个对象都添加一个使用查询表达式（聚合函数、F表达式、Q表达式、Func表达式等）的新字段。示例代码如下：
+```python
+atticles = Article.objects.annotate(author_name=F("author__name"))
+```
+
+## order_by
+指定将查询的结果根据某个字段进行排序。如果要倒序排序，那么可以在这个字段的前面加一个负号。示例代码如下：
+```python
+# 根据创建时间的正排序
+articles = Article.objects.order_by('create_time')
+# 根据创建时间的逆排序
+articles = Article.objects.order_by('-create_time')
+# 根据作者的名字进行排序
+articles = Article.objects.order_by('author_name')
+# 首先根据创建的时间进行排序，时间相同，按照作者进行排序
+articles = Article.objects.order_by('create_time','author_name')
+```
+**注意：多个`order_by`,会把前面的排序规则打乱，而使用后面的排序方式。**
